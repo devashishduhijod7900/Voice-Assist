@@ -1,38 +1,44 @@
-Multilingual AI Voice Assistant with RAG
+# Multilingual AI Voice Assistant with RAG
 
-A full-stack AI voice assistant built with React, FastAPI, Speech-to-Text (STT), Retrieval-Augmented Generation (RAG), and Text-to-Speech (TTS).
+A full-stack AI voice assistant built using React, FastAPI, Speech-to-Text (STT), Retrieval-Augmented Generation (RAG), and Text-to-Speech (TTS).
 
-1. Project Overview
+## 1. Project Overview
 
-The assistant allows users to speak naturally, ask questions about documents and websites, and hear AI-generated answers in multiple languages.
+The application allows users to speak naturally, ask questions about documents or websites, and hear AI-generated answers in multiple languages.
 
-Features
-Speech-to-Text transcription
-AI-generated answers using RAG
-Text-to-Speech audio responses
-Multilingual conversations
-PDF, TXT, Markdown, DOCX, and website ingestion
-Local vector database
-Hosted AI models
-React-based user interface
-WebSocket communication
-Conversation history during a session
-2. Technology Stack
-Component	Technology
-Frontend	React + Vite
-Backend	Python + FastAPI
-Communication	WebSocket
-Speech-to-Text	OpenAI transcription API
-LLM	OpenAI chat model
-Text-to-Speech	OpenAI speech API
-RAG framework	Custom retrieval pipeline
-Embeddings	Sentence Transformers
-Vector database	ChromaDB
-PDF processing	pypdf
-Word documents	python-docx
-Website extraction	BeautifulSoup
-Configuration	python-dotenv
-3. System Architecture
+### Features
+
+- Speech-to-Text transcription
+- AI-powered question answering with RAG
+- Text-to-Speech audio responses
+- Multilingual conversations
+- PDF, TXT, Markdown, DOCX, and website ingestion
+- Local vector database using ChromaDB
+- Hosted AI models
+- React frontend
+- WebSocket communication
+- Conversation history
+
+## 2. Technology Stack
+
+| Component | Technology |
+|---|---|
+| Frontend | React + Vite |
+| Backend | Python + FastAPI |
+| Communication | WebSocket |
+| Speech-to-Text | OpenAI transcription API |
+| LLM | OpenAI chat model |
+| Text-to-Speech | OpenAI speech API |
+| Embeddings | Sentence Transformers |
+| Vector Database | ChromaDB |
+| PDF Processing | pypdf |
+| DOCX Processing | python-docx |
+| Website Extraction | BeautifulSoup |
+| Configuration | python-dotenv |
+
+## 3. System Architecture
+
+```text
 User speaks
     |
     v
@@ -67,13 +73,13 @@ Audio response
     |
     v
 User hears the answer
+```
 
+The initial version processes one recorded utterance per turn. Streaming partial transcripts, continuous listening, and interruption handling can be added later.
 
-The initial implementation uses turn-based conversation: the user records an utterance, stops recording, and receives a spoken response.
+## 4. Project Structure
 
-Full-duplex conversation, partial transcripts, and interruption handling are future enhancements.
-
-4. Project Structure
+```text
 ai-voice-assistant/
 ├── backend/
 │   ├── app/
@@ -97,43 +103,51 @@ ai-voice-assistant/
 │   └── package.json
 ├── .gitignore
 └── README.md
+```
 
-5. Prerequisites
+## 5. Prerequisites
 
 Install the following:
 
-Python 3.11 or newer
-Node.js and npm
-An OpenAI API key
-Git (recommended)
-6. Backend Installation
+- Python 3.11 or newer
+- Node.js and npm
+- An OpenAI API key
+- Git (recommended)
 
-Create the project:
+## 6. Backend Installation
 
+Create the project directory:
+
+```bash
 mkdir ai-voice-assistant
 cd ai-voice-assistant
 mkdir backend
 cd backend
+```
 
+Create a Python virtual environment:
 
-Create a virtual environment:
-
+```bash
 python -m venv .venv
-
+```
 
 Activate it on Windows:
 
+```powershell
 .venv\Scripts\Activate.ps1
-
+```
 
 Activate it on macOS or Linux:
 
+```bash
 source .venv/bin/activate
+```
 
-Dependencies
+### Install Dependencies
 
-Create backend/requirements.txt:
+Create `backend/requirements.txt`:
 
+```text
 fastapi
 uvicorn[standard]
 python-multipart
@@ -145,16 +159,19 @@ pypdf
 beautifulsoup4
 requests
 python-docx
+```
 
+Install packages:
 
-Install the packages:
-
+```bash
 pip install -r requirements.txt
+```
 
-7. Environment Configuration
+## 7. Environment Configuration
 
-Create backend/.env:
+Create `backend/.env`:
 
+```dotenv
 OPENAI_API_KEY=your_api_key_here
 
 CHAT_MODEL=gpt-4.1-mini
@@ -167,93 +184,101 @@ CHROMA_PATH=./data/chroma
 EMBEDDING_MODEL=sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 
 FRONTEND_ORIGIN=http://localhost:5173
+```
 
+Replace `your_api_key_here` with your API key.
 
-Replace the API key placeholder with your own key.
+**Security:** Never expose your API key in frontend code or commit `.env` to Git.
 
-Security: Never expose your API key in React code, commit .env to Git, or send it to the browser.
+## 8. Backend Modules
 
-8. Backend Modules
-config.py
+### config.py
 
-Responsibilities:
+Responsible for:
 
-Load environment variables.
-Configure AI models.
-Configure the ChromaDB path.
-Set the document directory.
-Configure the permitted frontend origin.
-rag.py
+- Loading environment variables
+- Configuring AI models
+- Setting the ChromaDB storage path
+- Configuring document storage
+- Setting the frontend origin
 
-Responsibilities:
+### rag.py
 
-Load the multilingual embedding model.
-Split source text into overlapping chunks.
-Generate embeddings.
-Store chunks in ChromaDB.
-Retrieve relevant chunks for each question.
-Pass retrieved context to the LLM.
-Return the generated answer and source identifiers.
-ingestion.py
+Responsible for:
 
-Supports ingestion of:
+1. Loading the multilingual embedding model.
+2. Splitting text into overlapping chunks.
+3. Generating local embeddings.
+4. Storing embeddings in ChromaDB.
+5. Retrieving relevant document chunks.
+6. Sending retrieved context to the LLM.
+7. Returning answers and source identifiers.
 
-PDF documents
-Plain text files
-Markdown files
-DOCX documents
-Public website pages
+### ingestion.py
 
-Each source is extracted into text, split into chunks, embedded, and stored in ChromaDB.
+Supports these knowledge sources:
 
-voice.py
+- PDF documents
+- TXT files
+- Markdown files
+- DOCX documents
+- Public website pages
 
-Provides two functions:
+Each source is converted to text, divided into chunks, embedded, and stored in ChromaDB.
 
-transcribe_audio(audio_bytes): transcribes recorded speech into text.
-synthesize_speech(text): generates audio from the AI response.
-main.py
+### voice.py
 
-Provides:
+Provides two main functions:
 
-GET /health — health check.
-POST /ingest/file — upload and index a document.
-POST /ingest/url — index a website.
-WS /ws/voice — process voice conversations.
-9. Frontend Installation
+- `transcribe_audio(audio_bytes)`: converts speech into text.
+- `synthesize_speech(text)`: converts generated text into audio.
+
+### main.py
+
+Provides the following endpoints:
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Health check |
+| `POST /ingest/file` | Upload and index a document |
+| `POST /ingest/url` | Index a website |
+| `WS /ws/voice` | Process voice conversations |
+
+## 9. Frontend Installation
 
 From the project root:
 
+```bash
 npm create vite@latest frontend -- --template react
 cd frontend
 npm install
+```
 
+Create `frontend/.env`:
 
-Create frontend/.env:
-
+```dotenv
 VITE_API_URL=http://localhost:8000
 VITE_WS_URL=ws://localhost:8000/ws/voice
+```
 
+The frontend includes:
 
-The frontend provides:
+- Microphone recording controls
+- Connection and processing status
+- Speech transcript display
+- AI response display
+- Audio playback
+- Retrieved source names
+- Document upload
+- Website ingestion
 
-Microphone recording
-Recording controls
-Connection and processing status
-Transcribed text
-Generated answers
-Audio playback
-Retrieved source names
-Document upload
-Website ingestion
+Implement the React interface using `App.jsx`, `App.css`, and `main.jsx`.
 
-Use the React components and CSS described in this project's implementation guide for the complete interface.
+## 10. RAG Workflow
 
-10. RAG Workflow
+### Document Indexing
 
-The RAG workflow consists of two stages.
-
-Indexing stage
+```text
 PDF / DOCX / TXT / Website
           |
           v
@@ -267,8 +292,11 @@ PDF / DOCX / TXT / Website
           |
           v
        ChromaDB
+```
 
-Question-answering stage
+### Question Answering
+
+```text
 Spoken question
        |
        v
@@ -281,7 +309,7 @@ Question embedding
 ChromaDB similarity search
        |
        v
-Relevant text chunks
+Relevant document chunks
        |
        v
 LLM + retrieved context
@@ -291,103 +319,115 @@ Generated answer
        |
        v
 Speech synthesis
+```
 
+The assistant should answer knowledge-base questions using retrieved evidence. If the available context is insufficient, it should say that the answer cannot be determined from the indexed sources.
 
-The assistant should use retrieved evidence for knowledge-base questions. If the available context is insufficient, it should explain that it cannot determine the answer from the indexed sources.
+## 11. Multilingual Support
 
-11. Multilingual Support
+The system is designed for multilingual conversations.
 
-The system is designed for multilingual use.
-
-Speech recognition converts spoken questions into text.
-Multilingual embeddings support semantic retrieval across languages.
-The LLM is instructed to answer in the user's language.
-TTS generates audio from the response.
+- Speech recognition transcribes spoken questions.
+- Multilingual embeddings help retrieve relevant information across languages.
+- The LLM is instructed to answer in the user's language.
+- TTS converts the answer into audio.
 
 Test English, Hindi, mixed-language speech, and documents written in different languages.
 
-Cross-language retrieval and pronunciation quality depend on the selected models and the actual documents. Validate these before deployment.
+Actual transcription accuracy, cross-language retrieval, and pronunciation depend on the chosen models and source documents.
 
-12. Running the Application
+## 12. Run the Application
 
-Run the backend in Terminal 1:
+### Start the Backend
 
+Open Terminal 1:
+
+```bash
 cd backend
 uvicorn app.main:app --reload --port 8000
+```
 
+### Start the Frontend
 
-Run the frontend in Terminal 2:
+Open Terminal 2:
 
+```bash
 cd frontend
 npm run dev
+```
 
+Open the application:
 
-Open:
+- Frontend: http://localhost:5173
+- Backend health: http://localhost:8000/health
+- API documentation: http://localhost:8000/docs
 
-Frontend: http://localhost:5173
-Backend health check: http://localhost:8000/health
-FastAPI documentation: http://localhost:8000/docs
+The first backend startup may take longer because the embedding model must be downloaded.
 
-The first backend launch may take additional time because the embedding model must be downloaded.
+## 13. Testing Checklist
 
-13. Testing Checklist
-Backend starts successfully.
-Frontend connects to the WebSocket.
-Browser microphone permission works.
-Audio is transcribed correctly.
-A PDF can be uploaded.
-A website can be indexed.
-ChromaDB retrieves relevant passages.
-The LLM answers from retrieved context.
-The answer appears in the UI.
-Audio playback works.
-English questions work.
-Hindi questions work.
-Mixed-language questions are tested.
-Errors are displayed clearly.
-14. Production Improvements
+- [ ] Backend starts successfully.
+- [ ] Frontend connects to the WebSocket.
+- [ ] Microphone permissions work.
+- [ ] Speech is transcribed correctly.
+- [ ] PDF documents can be uploaded.
+- [ ] Websites can be indexed.
+- [ ] ChromaDB retrieves relevant passages.
+- [ ] The LLM answers using retrieved context.
+- [ ] The response appears in the UI.
+- [ ] Audio playback works.
+- [ ] English questions work.
+- [ ] Hindi questions work.
+- [ ] Mixed-language questions are tested.
+- [ ] Errors are handled gracefully.
+
+## 14. Production Improvements
 
 Before deploying publicly, implement:
 
-Authentication and per-user document permissions.
-WebSocket authorization and rate limiting.
-Secure website fetching to prevent SSRF.
-File type validation and upload limits.
-Retrieval relevance thresholds.
-Better document chunking and source citations.
-Persistent, isolated conversation histories.
-Background document indexing.
-Streaming speech recognition and TTS.
-Voice activity detection and interruption handling.
-HTTPS/WSS, logging, and monitoring.
-API cost controls and timeouts.
+1. Authentication and document access controls.
+2. WebSocket authorization and rate limiting.
+3. Secure website fetching to prevent SSRF.
+4. File validation and upload limits.
+5. Retrieval relevance thresholds.
+6. Source citations and improved chunking.
+7. Persistent, isolated conversation histories.
+8. Background document indexing.
+9. Streaming speech recognition and TTS.
+10. Voice activity detection and interruption handling.
+11. HTTPS/WSS, monitoring, and logging.
+12. API usage limits and cost controls.
 
-The example implementation is a prototype and requires these protections before public deployment.
+The initial implementation is a prototype and needs these protections before public deployment.
 
-15. Future Enhancements
-Continuous voice conversations
-Streaming partial transcripts
-Faster audio response delivery
-Interruptible speech playback
-Conversation memory
-Authentication and user accounts
-Database integration
-Website crawling
-Better retrieval with reranking
-Source citations
-Docker deployment
-Cloud hosting
-16. Useful Documentation
-OpenAI API documentation: https://developers.openai.com/api/docs/
-Speech-to-Text: https://developers.openai.com/api/docs/guides/transcription
-Text-to-Speech: https://developers.openai.com/api/docs/guides/text-to-speech
-FastAPI: https://fastapi.tiangolo.com/
-React: https://react.dev/
-Vite: https://vite.dev/
-ChromaDB: https://docs.trychroma.com/
-Sentence Transformers: https://www.sbert.net/
-Conclusion
+## 15. Future Enhancements
 
-This project combines React, FastAPI, speech recognition, RAG, ChromaDB, an LLM, and speech synthesis into a multilingual voice assistant.
+- Continuous voice conversations
+- Streaming partial transcripts
+- Faster audio response delivery
+- Interruptible speech playback
+- Conversation memory
+- User authentication
+- Database integration
+- Website crawling
+- Retrieval reranking
+- Source citations
+- Docker deployment
+- Cloud hosting
 
-Start by getting document ingestion and one complete voice interaction working locally. Then improve retrieval quality and move toward low-latency streaming before deploying the application to production.
+## 16. Useful Documentation
+
+- OpenAI API: https://developers.openai.com/api/docs/
+- Speech-to-Text: https://developers.openai.com/api/docs/guides/transcription
+- Text-to-Speech: https://developers.openai.com/api/docs/guides/text-to-speech
+- FastAPI: https://fastapi.tiangolo.com/
+- React: https://react.dev/
+- Vite: https://vite.dev/
+- ChromaDB: https://docs.trychroma.com/
+- Sentence Transformers: https://www.sbert.net/
+
+## Conclusion
+
+This project combines React, FastAPI, speech recognition, RAG, ChromaDB, an LLM, and speech synthesis into a multilingual AI voice assistant.
+
+Start by getting document ingestion and one complete voice interaction working locally. Then improve retrieval quality, add streaming audio, and implement production security before deployment.
